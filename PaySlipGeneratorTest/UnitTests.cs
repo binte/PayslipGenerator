@@ -30,22 +30,20 @@ namespace PaySlipGeneratorTest
             Assert.True(expected.Equals(IO.ParseEmployeeLine("David,Rudd,60050,9%,01 March - 31 March")));
         }
 
-        [Fact]
-        public void GrossIncome_WithoutDecimalPart_ReturnsExpectedGrossIncome()
+        [Theory]
+        [InlineData(5004, 60050)]
+        [InlineData(5004, 60045)]
+        [InlineData(5003, 60030)]
+        [InlineData(5002, 60029)]
+        public void GrossIncome_InputWithoutDecimalPart_ReturnsExpectedGrossIncome(int expected, int value)
         {
-
+            Assert.Equal(expected, TaxCalculator.GrossIncome(value));
         }
 
         [Fact]
-        public void GrossIncome_WithDecimalPart_ReturnsExpectedGrossIncome()
+        public void GrossIncome_InputIsNegative_FailsWithNegativeException()
         {
-
-        }
-
-        [Fact]
-        public void GrossIncome_NegativeNumber_FAILSSSSSSS()
-        {
-
+            Assert.Throws<NegativeNumberException>(() => TaxCalculator.GrossIncome(-60050));
         }
     }
 }
