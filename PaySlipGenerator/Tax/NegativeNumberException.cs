@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace PaySlipGenerator
+namespace PaySlipGenerator.Tax
 {
     public class NegativeNumberException : Exception
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace PaySlipGenerator
@@ -11,7 +10,6 @@ namespace PaySlipGenerator
         public static List<Employee> ReadEmployeeData(string path)
         {
             List<Employee> employees = new List<Employee>();
-
 
             using (var reader = new StreamReader(File.OpenRead(path)))
             {
