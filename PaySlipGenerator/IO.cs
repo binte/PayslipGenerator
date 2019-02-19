@@ -27,11 +27,18 @@ namespace PaySlipGenerator
         public static Employee ParseEmployeeLine(string line)
         {
             string[] parameters = line.Split(','), dates;
-            string super = Regex.Match(parameters[3], "[0-9]*").Value;  // discard the % symbol
+            string superStr = Regex.Match(parameters[3], "[0-9]*").Value;  // discard the % symbol
+            int super = Int32.Parse(superStr);
+
+            if(super < 0 || super > 50)
+            {
+                throw new SuperOutOfBoundsException();
+            }
 
             dates = parameters[4].Split('-');  // separate the two dates
             PaySlip p = new PaySlip(DateTime.Parse(dates[0] + " " + DateTime.Today.Year), DateTime.Parse(dates[1] + " " + DateTime.Today.Year));
-            Employee e = new Employee(parameters[0], parameters[1], Double.Parse(parameters[2]), Int32.Parse(super), new List<PaySlip>() { p });
+
+            Employee e = new Employee(parameters[0], parameters[1], UInt32.Parse(parameters[2]), (double)super/100, new List<PaySlip>() { p });
             p.Employee = e;
             return e;
         }

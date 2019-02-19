@@ -6,7 +6,7 @@ namespace PaySlipGenerator
 {
     public class Employee : IEquatable<object>
     {
-        public Employee(string firstName, string lastName, double annualSalary, int superRate)
+        public Employee(string firstName, string lastName, uint annualSalary, double superRate)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -16,7 +16,7 @@ namespace PaySlipGenerator
             this.Payslips = new List<PaySlip>();
         }
 
-        public Employee(string firstName, string lastName, double annualSalary, int superRate, ICollection<PaySlip> payslips)
+        public Employee(string firstName, string lastName, uint annualSalary, double superRate, ICollection<PaySlip> payslips)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -34,8 +34,8 @@ namespace PaySlipGenerator
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public double AnnualSalary { get; set; }
-        public int SuperRate { get; set; }
+        public uint AnnualSalary { get; set; }
+        public double SuperRate { get; set; }
 
         public ICollection<PaySlip> Payslips { get; set; }
 

@@ -10,24 +10,17 @@ namespace PaySlipGeneratorTest
 {
     public class IOTest
     {
-        private readonly ITestOutputHelper output;
-
-        public IOTest(ITestOutputHelper output)
-        {
-            this.output = output;
-        }
-
         [Fact]
         public void ParseEmployeeLine_IncorrectlyFormattedPeriod_FailsWithFormatException()
         {
-            Employee expected = new Employee("David", "Rudd", 60050, 9, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) });
+            Employee expected = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) });
             Assert.Throws<FormatException>(() => IO.ParseEmployeeLine("David,Rudd,60050,9%,01 March . 31 March"));
         }
 
         [Fact]
         public void ParseEmployeeLine_CorrectlyFormattedLine_ReturnsExpectedEmployee()
         {
-            Employee expected = new Employee("David", "Rudd", 60050, 9, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) });
+            Employee expected = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) });
             Assert.True(expected.Equals(IO.ParseEmployeeLine("David,Rudd,60050,9%,01 March - 31 March")));
         }
 
@@ -49,8 +42,8 @@ namespace PaySlipGeneratorTest
 
             expected.AddRange(new List<Employee>()
             {
-                new Employee("David", "Rudd", 60050, 9, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) }),
-                new Employee("Ryan", "Chen", 120000, 10, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) })
+                new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) }),
+                new Employee("Ryan", "Chen", 120000, 0.1, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) })
             });
 
             Assert.Equal(expected, actual);

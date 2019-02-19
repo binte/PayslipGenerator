@@ -49,12 +49,37 @@ namespace PaySlipGenerator
 
             PaySlip p = (PaySlip)other;
 
-            return ( ( (this.Employee == null && p.Employee == null) || (this.Employee != null && p.Employee != null && this.Employee.FirstName == p.Employee.FirstName) ) &&
-                    this.StartDate == p.StartDate && this.EndDate == p.EndDate &&
-                    this.GrossIncome == p.GrossIncome &&
-                    this.IncomeTax == p.IncomeTax && 
-                    this.NetIncome == p.NetIncome && 
-                    this.Super == p.Super);
+            if ( this.StartDate != p.StartDate)
+            {
+                return false;
+            }
+
+            if( this.EndDate != p.EndDate )
+            {
+                return false;
+            }
+
+            if (this.GrossIncome != p.GrossIncome)
+            {
+                return false;
+            }
+
+            if( this.IncomeTax != p.IncomeTax )
+            {
+                return false;
+            }
+
+            if( this.NetIncome != p.NetIncome)
+            {
+                return false;
+            }
+
+            if( this.Super != p.Super )
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override int GetHashCode()

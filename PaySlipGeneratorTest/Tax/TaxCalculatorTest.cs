@@ -9,13 +9,6 @@ namespace PaySlipGeneratorTest
 {
     public class TaxCalculatorTest
     {
-        private readonly ITestOutputHelper output;
-
-        public TaxCalculatorTest(ITestOutputHelper output)
-        {
-            this.output = output;
-        }
-
         [Theory]
         [InlineData(0, 0)]
         [InlineData(0, 18200)]
