@@ -31,7 +31,9 @@ namespace PaySlipGenerator
 
             dates = parameters[4].Split('-');  // separate the two dates
             PaySlip p = new PaySlip(DateTime.Parse(dates[0] + " " + DateTime.Today.Year), DateTime.Parse(dates[1] + " " + DateTime.Today.Year));
-            return new Employee(parameters[0], parameters[1], Double.Parse(parameters[2]), Int32.Parse(super), new List<PaySlip>() { p });
+            Employee e = new Employee(parameters[0], parameters[1], Double.Parse(parameters[2]), Int32.Parse(super), new List<PaySlip>() { p });
+            p.Employee = e;
+            return e;
         }
     }
 }

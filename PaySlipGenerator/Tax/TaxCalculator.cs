@@ -28,11 +28,6 @@ namespace PaySlipGenerator.Tax
             return (int)Math.Round((double)value / 12, 0, MidpointRounding.AwayFromZero);
         }
 
-        public static TaxBand GetTaxBand(int annualIncome)
-        {
-            return TaxBands.GetTaxBand(annualIncome);
-        }
-
         public static int NetIncome(int annualIncome)
         {
             return GrossIncome(annualIncome) - IncomeTax(annualIncome);
@@ -41,6 +36,11 @@ namespace PaySlipGenerator.Tax
         public static int Super(int annualIncome, double super)
         {
             return (int)Math.Round((double)GrossIncome(annualIncome) * super, 0, MidpointRounding.AwayFromZero);
+        }
+
+        public static TaxBand GetTaxBand(int annualIncome)
+        {
+            return TaxBands.GetTaxBand(annualIncome);
         }
     }
 }

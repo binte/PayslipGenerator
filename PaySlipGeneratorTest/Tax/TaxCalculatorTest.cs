@@ -7,11 +7,11 @@ using Xunit.Abstractions;
 
 namespace PaySlipGeneratorTest
 {
-    public class UnitTests
+    public class TaxCalculatorTest
     {
         private readonly ITestOutputHelper output;
-        
-        public UnitTests(ITestOutputHelper output)
+
+        public TaxCalculatorTest(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -52,20 +52,6 @@ namespace PaySlipGeneratorTest
         public void GetTaxBand_InputIsNegative_FailsWithNegativeNumberException()
         {
             Assert.Throws<NegativeNumberException>(() => TaxCalculator.GetTaxBand(-60050));
-        }
-
-        [Fact]
-        public void ParseEmployeeLine_IncorrectlyFormattedPeriod_FailsWithFormatException()
-        {
-            Employee expected = new Employee("David", "Rudd", 60050, 9, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) });
-            Assert.Throws<FormatException>(() => IO.ParseEmployeeLine("David,Rudd,60050,9%,01 March . 31 March"));
-        }
-
-        [Fact]
-        public void ParseEmployeeLine_CorrectlyFormattedLine_ReturnsExpectedEmployee()
-        {
-            Employee expected = new Employee("David", "Rudd", 60050, 9, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) });
-            Assert.True(expected.Equals(IO.ParseEmployeeLine("David,Rudd,60050,9%,01 March - 31 March")));
         }
 
         [Theory]

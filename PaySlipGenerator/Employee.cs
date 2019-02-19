@@ -16,24 +16,33 @@ namespace PaySlipGenerator
             this.Payslips = new List<PaySlip>();
         }
 
-        public Employee(string firstName, string lastName, double annualSalary, int superRate, List<PaySlip> payslips)
+        public Employee(string firstName, string lastName, double annualSalary, int superRate, ICollection<PaySlip> payslips)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
             this.AnnualSalary = annualSalary;
             this.SuperRate = superRate;
+
+            foreach(PaySlip p in payslips)
+            {
+                p.Employee = this;
+            }
+
             this.Payslips = payslips;
         }
+
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public double AnnualSalary { get; set; }
         public int SuperRate { get; set; }
-        public List<PaySlip> Payslips { get; set; }
+
+        public ICollection<PaySlip> Payslips { get; set; }
+
 
         public override bool Equals(object other)
         {
-            if( !(other is Employee) )
+            if( other is null || !(other is Employee) )
             {
                 return false;
             }
