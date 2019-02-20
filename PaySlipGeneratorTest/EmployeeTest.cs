@@ -71,5 +71,35 @@ namespace PaySlipGeneratorTest
             Employee e2 = new Employee("David", "Rudd", 60050, super);
             Assert.False(e1.Equals(e2));
         }
+
+        [Fact]
+        public void Equals_DifferentPayslips_ReturnsFalse()
+        {
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09);
+            PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31));
+            e1.Payslips.Add(p1);
+
+            Employee e2 = new Employee("David", "Rudd", 60050, 0.09);
+            PaySlip p2 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 2), new DateTime(DateTime.Today.Year, 3, 31));
+            e2.Payslips.Add(p2);
+
+            Assert.False(e1.Equals(e2));
+        }
+
+        [Fact]
+        public void Equals_DifferentNumberOfPayslips_ReturnsFalse()
+        {
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09);
+            PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31));
+            e1.Payslips.Add(p1);
+
+            Employee e2 = new Employee("David", "Rudd", 60050, 0.09);
+            PaySlip p2 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31));
+            e2.Payslips.Add(p2);
+            PaySlip p3 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 2), new DateTime(DateTime.Today.Year, 3, 31));
+            e2.Payslips.Add(p3);
+
+            Assert.False(e1.Equals(e2));
+        }
     }
 }

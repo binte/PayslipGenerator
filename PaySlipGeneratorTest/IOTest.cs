@@ -189,6 +189,26 @@ namespace PaySlipGeneratorTest
             }
         }
 
+        [Fact]
+        public void WriteToFile_MockOneEmployeeInStream_Success()
+        {
+            var mockFileSystem = new MockFileSystem();
+            var mockOutputFile = new MockFileData("David Rudd,01 March – 31 March,5004,922,4082,450");
+
+            mockFileSystem.AddFile(@"data\payslips.csv", mockOutputFile);
+            IO.SetFileSystem(mockFileSystem);  // inject the mock FS into the IO class
+
+            using (var stream = new MemoryStream())
+            using (var writer = new StreamWriter(stream))
+            {
+                List<Employee> employees = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), };
+
+                IO.WriteToStream(employees, writer);
+                IO.WriteToFile(@"data\payslips.csv", stream);
+                Assert.Equal("David Rudd,01 March - 31 March,5004,922,4082,450\r\n", Encoding.UTF8.GetString(stream.ToArray()));
+            }
+        }
+
         /**
          * INTEGRATION TESTS
          */
@@ -219,10 +239,9 @@ namespace PaySlipGeneratorTest
             using (var stream = new MemoryStream())
             using (var writer = new StreamWriter(stream))
             {
-                List<Employee> before = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), },
-                               after = new List<Employee>();
+                List<Employee> employees = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), };
 
-                IO.WriteToStream(before, writer);
+                IO.WriteToStream(employees, writer);
                 IO.WriteToFile(@"data\payslips.csv", stream);
             }
 
