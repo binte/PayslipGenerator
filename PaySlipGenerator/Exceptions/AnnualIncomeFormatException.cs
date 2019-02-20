@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
-namespace PaySlipGenerator
+namespace PaySlipGenerator.Exceptions
 {
-    public class SuperOutOfBoundsException : Exception
+    public class AnnualIncomeFormatException : Exception
     {
         /// <summary>
         /// Just create the exception
         /// </summary>
-        public SuperOutOfBoundsException()
+        public AnnualIncomeFormatException()
           : base()
         {
         }
@@ -19,7 +17,7 @@ namespace PaySlipGenerator
         /// Create the exception with description
         /// </summary>
         /// <param name="message">Exception description</param>
-        public SuperOutOfBoundsException(String message)
+        public AnnualIncomeFormatException(String message)
           : base(message)
         {
         }
@@ -29,7 +27,7 @@ namespace PaySlipGenerator
         /// </summary>
         /// <param name="message">Exception description</param>
         /// <param name="innerException">Exception inner cause</param>
-        public SuperOutOfBoundsException(String message, Exception innerException)
+        public AnnualIncomeFormatException(String message, Exception innerException)
           : base(message, innerException)
         {
         }
@@ -41,7 +39,7 @@ namespace PaySlipGenerator
         /// </summary>
         /// <param name="info">Serialization info</param>
         /// <param name="context">Serialization context</param>
-        protected SuperOutOfBoundsException(SerializationInfo info, StreamingContext context)
+        protected AnnualIncomeFormatException(SerializationInfo info, StreamingContext context)
           : base(info, context)
         {
         }

@@ -45,18 +45,74 @@ namespace PaySlipGeneratorTest
             Assert.False(p.Equals(e));
         }
 
-        //[Theory]
-        //[InlineData("20190228")]
-        //[InlineData("20190302")]
-        //[InlineData("20180301")]
-        //[InlineData("20200301")]
-        //[InlineData("20190201")]
-        //[InlineData("20190401")]
-        //public void Equals_StartDate_ReturnsFalse(string startDate)
-        //{
-        //    PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 31));
-        //    PaySlip p2 = new PaySlip(firstName, "Rudd", 60050, 0.09);
-        //    Assert.False(p1.Equals(p2));
-        //}
+        [Theory]
+        [InlineData("20180302")]
+        [InlineData("20190201")]
+        public void Equals_DifferentStartDate_ReturnsFalse(string startDate)
+        {
+            DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
+            PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), endDate, 5004, 922, 4082, 450);
+            PaySlip p2 = new PaySlip(DateTime.ParseExact(startDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture), endDate, 5004, 922, 4082, 450);
+            Assert.False(p1.Equals(p2));
+        }
+
+        [Theory]
+        [InlineData("20180330")]
+        [InlineData("20190228")]
+        public void Equals_DifferentEndDate_ReturnsFalse(string endDate)
+        {
+            DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
+            PaySlip p1 = new PaySlip(startDate, new DateTime(DateTime.Today.Year, 3, 31), 5004, 922, 4082, 450);
+            PaySlip p2 = new PaySlip(startDate, DateTime.ParseExact(endDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture), 5004, 922, 4082, 450);
+            Assert.False(p1.Equals(p2));
+        }
+
+        [Theory]
+        [InlineData(5003)]
+        [InlineData(5005)]
+        public void Equals_DifferentGrossIncome_ReturnsFalse(int grossIncome)
+        {
+            DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
+            DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
+            PaySlip p1 = new PaySlip(startDate, endDate, 5004, 922, 4082, 450);
+            PaySlip p2 = new PaySlip(startDate, endDate, grossIncome, 922, 4082, 450);
+            Assert.False(p1.Equals(p2));
+        }
+
+        [Theory]
+        [InlineData(921)]
+        [InlineData(923)]
+        public void Equals_DifferentIncomeTax_ReturnsFalse(int incomeTax)
+        {
+            DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
+            DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
+            PaySlip p1 = new PaySlip(startDate, endDate, 5004, 922, 4082, 450);
+            PaySlip p2 = new PaySlip(startDate, endDate, 5004, incomeTax, 4082, 450);
+            Assert.False(p1.Equals(p2));
+        }
+
+        [Theory]
+        [InlineData(4083)]
+        [InlineData(4081)]
+        public void Equals_DifferentNetIncome_ReturnsFalse(int netincome)
+        {
+            DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
+            DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
+            PaySlip p1 = new PaySlip(startDate, endDate, 5004, 922, 4082, 450);
+            PaySlip p2 = new PaySlip(startDate, endDate, 5004, 922, netincome, 450);
+            Assert.False(p1.Equals(p2));
+        }
+
+        [Theory]
+        [InlineData(451)]
+        [InlineData(449)]
+        public void Equals_DifferentSuper_ReturnsFalse(int super)
+        {
+            DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
+            DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
+            PaySlip p1 = new PaySlip(startDate, endDate, 5004, 922, 4082, 450);
+            PaySlip p2 = new PaySlip(startDate, endDate, 5004, 922, 4082, super);
+            Assert.False(p1.Equals(p2));
+        }
     }
 }

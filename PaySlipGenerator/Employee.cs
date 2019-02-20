@@ -79,5 +79,11 @@ namespace PaySlipGenerator
         {
             return HashCode.Combine(FirstName, LastName);
         }
+
+        public string ToCsvString()
+        {
+            PaySlip p = this.Payslips.LastOrDefault();
+            return string.Format("{0} {1},{2} - {3},{4},{5},{6},{7}", this.FirstName, this.LastName, p.StartDate.ToString("dd MMMM"), p.EndDate.ToString("dd MMMM"), p.GrossIncome, p.IncomeTax, p.NetIncome, p.Super);
+        }
     }
 }
