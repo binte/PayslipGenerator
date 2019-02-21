@@ -12,14 +12,14 @@ namespace PaySlipGeneratorTest
         [Theory]
         [InlineData(60050, 0.09, 5004, 922, 4082, 450)]
         [InlineData(120000, 0.1, 10000, 2669, 7331, 1000)]
-        public void GeneratePayslip_ValidInput_UpdatesPayslipAccordingly(int annualSalary, double superRate, int grossIncome, int incomeTax, int netIncome, double super)
+        public void GeneratePayslip_ValidInput_UpdatesPayslipAccordingly(uint annualIncome, double superRate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
         {
             DateTime beginning = new DateTime(DateTime.Today.Year, 3, 1),
                      end = new DateTime(DateTime.Today.Year, 3, 31);
             PaySlip p1 = new PaySlip(beginning, end, grossIncome, incomeTax, netIncome, super),
                     p2 = new PaySlip(beginning, end);
 
-            p2.Generate(annualSalary, superRate);
+            p2.Generate(annualIncome, superRate);
             Assert.Equal(p1, p2);
         }
 
@@ -70,7 +70,7 @@ namespace PaySlipGeneratorTest
         [Theory]
         [InlineData(5003)]
         [InlineData(5005)]
-        public void Equals_DifferentGrossIncome_ReturnsFalse(int grossIncome)
+        public void Equals_DifferentGrossIncome_ReturnsFalse(uint grossIncome)
         {
             DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
             DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
@@ -82,7 +82,7 @@ namespace PaySlipGeneratorTest
         [Theory]
         [InlineData(921)]
         [InlineData(923)]
-        public void Equals_DifferentIncomeTax_ReturnsFalse(int incomeTax)
+        public void Equals_DifferentIncomeTax_ReturnsFalse(uint incomeTax)
         {
             DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
             DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
@@ -94,7 +94,7 @@ namespace PaySlipGeneratorTest
         [Theory]
         [InlineData(4083)]
         [InlineData(4081)]
-        public void Equals_DifferentNetIncome_ReturnsFalse(int netincome)
+        public void Equals_DifferentNetIncome_ReturnsFalse(uint netincome)
         {
             DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
             DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);
@@ -106,7 +106,7 @@ namespace PaySlipGeneratorTest
         [Theory]
         [InlineData(451)]
         [InlineData(449)]
-        public void Equals_DifferentSuper_ReturnsFalse(int super)
+        public void Equals_DifferentSuper_ReturnsFalse(uint super)
         {
             DateTime startDate = new DateTime(DateTime.Today.Year, 3, 1);
             DateTime endDate = new DateTime(DateTime.Today.Year, 3, 31);

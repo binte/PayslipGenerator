@@ -20,7 +20,7 @@ namespace PaySlipGeneratorTest
         [InlineData(0.37, 180000)]
         [InlineData(0.45, 180001)]
         [InlineData(0.45, 99999999)]
-        public void GetTaxBand_ValidTaxBand_ReturnsExpectedVariableTax(double expectedVariableTax, int annualIncome)
+        public void GetTaxBand_ValidTaxBand_ReturnsExpectedVariableTax(double expectedVariableTax, uint annualIncome)
         {
             Assert.Equal(expectedVariableTax, TaxCalculator.GetTaxBand(annualIncome).VariableTax);
         }
@@ -36,15 +36,9 @@ namespace PaySlipGeneratorTest
         [InlineData(19822, 180000)]
         [InlineData(54232, 180001)]
         [InlineData(54232, 99999999)]
-        public void GetTaxBand_ValidTaxBand_ReturnsExpectedFlatTax(double? expectedFlatTax, int annualIncome)
+        public void GetTaxBand_ValidTaxBand_ReturnsExpectedFlatTax(double? expectedFlatTax, uint annualIncome)
         {
             Assert.Equal(expectedFlatTax, TaxCalculator.GetTaxBand(annualIncome).FlatTax);
-        }
-
-        [Fact]
-        public void GetTaxBand_InputIsNegative_FailsWithNegativeNumberException()
-        {
-            Assert.Throws<NegativeNumberException>(() => TaxCalculator.GetTaxBand(-60050));
         }
 
         [Theory]
@@ -52,15 +46,9 @@ namespace PaySlipGeneratorTest
         [InlineData(5004, 60045)]
         [InlineData(5003, 60030)]
         [InlineData(5002, 60029)]
-        public void GrossIncome_ValidInput_ReturnsExpectedGrossIncome(int expected, int annualIncome)
+        public void GrossIncome_ValidInput_ReturnsExpectedGrossIncome(uint expected, uint annualIncome)
         {
             Assert.Equal(expected, TaxCalculator.GrossIncome(annualIncome));
-        }
-
-        [Fact]
-        public void GrossIncome_InputIsNegative_FailsWithNegativeNumberException()
-        {
-            Assert.Throws<NegativeNumberException>(() => TaxCalculator.GrossIncome(-60050));
         }
 
         [Theory]
@@ -76,44 +64,32 @@ namespace PaySlipGeneratorTest
         [InlineData(4519, 180000)]
         [InlineData(4519, 180001)]
         [InlineData(372769, 9999999)]
-        public void IncomeTax_ValidInput_ReturnsExpectedGrossIncome(int expected, int annualIncome)
+        public void IncomeTax_ValidInput_ReturnsExpectedGrossIncome(uint expected, uint annualIncome)
         {
             Assert.Equal(expected, TaxCalculator.IncomeTax(annualIncome));
-        }
-
-        [Fact]
-        public void IncomeTax_InputIsNegative_FailsWithNegativeNumberException()
-        {
-            Assert.Throws<NegativeNumberException>(() => TaxCalculator.IncomeTax(-60050));
         }
 
         [Theory]
         [InlineData(4082, 60050)]
         [InlineData(7331, 120000)]
-        public void NetIncome_ValidInput_ReturnsExpectedNetIncome(int expected, int annualIncome)
+        public void NetIncome_ValidInput_ReturnsExpectedNetIncome(uint expected, uint annualIncome)
         {
             Assert.Equal(expected, TaxCalculator.NetIncome(annualIncome));
-        }
-
-        [Fact]
-        public void NetIncome_InputIsNegative_FailsWithNegativeNumberException()
-        {
-            Assert.Throws<NegativeNumberException>(() => TaxCalculator.NetIncome(-60050));
         }
 
         [Theory]
         [InlineData(450, 60050, 0.09)]
         [InlineData(1000, 120000, 0.1)]
         [InlineData(401, 60084, 0.08)]
-        public void Super_ValidInput_ReturnsExpectedSuper(int expected, int annualIncome, double super)
+        public void Super_ValidInput_ReturnsExpectedSuper(uint expected, uint annualIncome, double super)
         {
             Assert.Equal(expected, TaxCalculator.Super(annualIncome, super));
         }
 
         [Fact]
-        public void Super_InputIsNegative_FailsWithNegativeNumberException()
+        public void Super_SuperIsNegative_FailsWithNegativeNumberException()
         {
-            Assert.Throws<NegativeNumberException>(() => TaxCalculator.Super(-60050, 0.09));
+            Assert.Throws<NegativeNumberException>(() => TaxCalculator.Super(60050, -0.09));
         }
     }
 }

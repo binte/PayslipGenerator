@@ -11,7 +11,7 @@ namespace PaySlipGenerator
             this.EndDate = endDate;
         }
 
-        public PaySlip(DateTime startDate, DateTime endDate, int grossIncome, int incomeTax, int netIncome, double super)
+        public PaySlip(DateTime startDate, DateTime endDate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
         {
             this.StartDate = startDate;
             this.EndDate = endDate;
@@ -19,24 +19,27 @@ namespace PaySlipGenerator
             this.IncomeTax = incomeTax;
             this.NetIncome = netIncome;
             this.Super = super;
+            this.Generated = true;  // If the constructor is called with all these parameters, it is assumed that the payslip has been generated
         }
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int  GrossIncome { get; set; }
-        public int IncomeTax { get; set; }
-        public int NetIncome { get; set; }
-        public double Super { get; set; }
+        public uint GrossIncome { get; set; }
+        public uint IncomeTax { get; set; }
+        public uint NetIncome { get; set; }
+        public uint Super { get; set; }
+        public bool Generated { get; set; }  // By default, the payslips won't have been generated (False is the default value already)
 
         public Employee Employee { get; set; }
 
 
-        public void Generate(int annualIncome, double super)
+        public void Generate(uint annualIncome, double superRate)
         {
             this.GrossIncome = TaxCalculator.GrossIncome(annualIncome);
             this.IncomeTax = TaxCalculator.IncomeTax(annualIncome);
             this.NetIncome = this.GrossIncome - this.IncomeTax;
-            this.Super = TaxCalculator.Super(annualIncome, super);
+            this.Super = TaxCalculator.Super(annualIncome, superRate);
+            this.Generated = true;
         }
 
 

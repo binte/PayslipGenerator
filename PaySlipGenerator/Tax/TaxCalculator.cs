@@ -5,40 +5,35 @@ namespace PaySlipGenerator.Tax
 {
     public static partial class TaxCalculator
     {
-        public static int GrossIncome(int annualIncome)
+        public static uint GrossIncome(uint annualIncome)
         {
-            if (annualIncome<0)
-            {
-                throw new NegativeNumberException();
-            }
-
-            return (int) Math.Round((double)annualIncome / 12, 0, MidpointRounding.AwayFromZero);
+            return (uint) Math.Round((double)annualIncome / 12, 0, MidpointRounding.AwayFromZero);
         }
 
-        public static int IncomeTax(int annualIncome)
+        public static uint IncomeTax(uint annualIncome)
         {
-            if (annualIncome < 0)
-            {
-                throw new NegativeNumberException();
-            }
-
             TaxBand band = TaxBands.GetTaxBand(annualIncome);
             double value = band.VariableTax * (annualIncome - band.TaxableIncomeLB - 1) + band.FlatTax;
 
-            return (int)Math.Round((double)value / 12, 0, MidpointRounding.AwayFromZero);
+            return (uint)Math.Round((double)value / 12, 0, MidpointRounding.AwayFromZero);
         }
 
-        public static int NetIncome(int annualIncome)
+        public static uint NetIncome(uint annualIncome)
         {
             return GrossIncome(annualIncome) - IncomeTax(annualIncome);
         }
 
-        public static int Super(int annualIncome, double super)
+        public static uint Super(uint annualIncome, double superRate)
         {
-            return (int)Math.Round((double)GrossIncome(annualIncome) * super, 0, MidpointRounding.AwayFromZero);
+            if (superRate < 0)
+            {
+                throw new NegativeNumberException();
+            }
+
+            return (uint)Math.Round((double)GrossIncome(annualIncome) * superRate, 0, MidpointRounding.AwayFromZero);
         }
 
-        public static TaxBand GetTaxBand(int annualIncome)
+        public static TaxBand GetTaxBand(uint annualIncome)
         {
             return TaxBands.GetTaxBand(annualIncome);
         }

@@ -9,6 +9,82 @@ namespace PaySlipGeneratorTest
     public class EmployeeTest
     {
         [Fact]
+        public void GeneratePayslips_EmployeeHasNoPayslips_NoChangesMade()
+        {
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09), e2 = new Employee("David", "Rudd", 60050, 0.09);
+            e1.GeneratePayslips();
+            Assert.True(e1.Equals(e2));
+        }
+
+        [Theory]
+        [InlineData(5005, 922, 4082, 450)]
+        [InlineData(5004, 921, 4082, 450)]
+        [InlineData(5004, 922, 4081, 450)]
+        [InlineData(5004, 922, 4082, 451)]
+        public void GeneratePayslips_EmployeeHasNonGeneratedPayslip_PayslipGeneratedResultsInDifferentEmployees(uint grossIncome, uint incomeTax, uint netIncome, uint super)
+        {
+            PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31)),
+                    p2 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31), grossIncome, incomeTax, netIncome, super);
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p1 }),
+                     e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p2 });
+
+            e1.GeneratePayslips();
+            Assert.False(e1.Equals(e2));
+        }
+
+        [Fact]
+        public void GeneratePayslips_EmployeeHasNonGeneratedPayslip_PayslipGeneratedV1()
+        {
+            PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31)),
+                    p2 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31));
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p1 }),
+                     e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p2 });
+
+            e1.GeneratePayslips();
+            Assert.False(e1.Equals(e2));
+        }
+
+        [Fact]
+        public void GeneratePayslips_EmployeeHasNonGeneratedPayslip_PayslipGeneratedV2()
+        {
+            PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31)),
+                    p2 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31), 5004, 922, 4082, 450);
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p1 }),
+                     e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p2 });
+
+            e1.GeneratePayslips();
+            Assert.True(e1.Equals(e2));
+        }
+
+        [Fact]
+        public void GeneratePayslips_EmployeeHasGeneratedPayslip_NoChangesMade()
+        {
+            PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31), 5004, 922, 4082, 450),
+                    p2 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31), 5004, 922, 4082, 450);
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p1 }),
+                     e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p2 });
+
+            e1.GeneratePayslips();
+            Assert.True(e1.Equals(e2));
+        }
+
+        [Fact]
+        public void GeneratePayslips_EmployeeHasGeneratedAndUngeneratedPayslips_UngeneratedPayslipGenerated()
+        {
+            PaySlip p11 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31), 5004, 922, 4082, 450),
+                    p12 = new PaySlip(new DateTime(DateTime.Today.Year, 4, 1), new DateTime(DateTime.Today.Year, 4, 30)),
+                    p21 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31), 5004, 922, 4082, 450),
+                    p22 = new PaySlip(new DateTime(DateTime.Today.Year, 4, 1), new DateTime(DateTime.Today.Year, 4, 30), 5004, 922, 4082, 450);
+            Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p11, p12 }),
+                     e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p21, p22 });
+
+            e1.GeneratePayslips();
+            Assert.True(e1.Equals(e2));
+        }
+
+
+
+        [Fact]
         public void Equals_ObjectIsNull_ReturnsFalse()
         {
             Employee e = new Employee("David", "Rudd", 60050, 0.09);

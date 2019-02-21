@@ -16,13 +16,8 @@ namespace PaySlipGenerator.Tax
                 new TaxBand(180001, Int32.MaxValue, 0.45, 54232)
             };
 
-            public static TaxBand GetTaxBand(int annualIncome)
+            public static TaxBand GetTaxBand(uint annualIncome)
             {
-                if (annualIncome < 0)
-                {
-                    throw new NegativeNumberException();
-                }
-
                 return List.Find(b => b.TaxableIncomeLB <= annualIncome && b.TaxableIncomeUB >= annualIncome);
             }
         }

@@ -6,21 +6,21 @@ namespace PaySlipGenerator
 {
     public class Employee : IEquatable<object>
     {
-        public Employee(string firstName, string lastName, uint annualSalary, double superRate)
+        public Employee(string firstName, string lastName, uint annualIncome, double superRate)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
-            this.AnnualSalary = annualSalary;
+            this.AnnualIncome = annualIncome;
             this.SuperRate = superRate;
 
             this.Payslips = new List<PaySlip>();
         }
 
-        public Employee(string firstName, string lastName, uint annualSalary, double superRate, ICollection<PaySlip> payslips)
+        public Employee(string firstName, string lastName, uint annualIncome, double superRate, ICollection<PaySlip> payslips)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
-            this.AnnualSalary = annualSalary;
+            this.AnnualIncome = annualIncome;
             this.SuperRate = superRate;
 
             foreach(PaySlip p in payslips)
@@ -34,11 +34,23 @@ namespace PaySlipGenerator
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public uint AnnualSalary { get; set; }
+        public uint AnnualIncome { get; set; }
         public double SuperRate { get; set; }
 
         public ICollection<PaySlip> Payslips { get; set; }
 
+
+
+        public void GeneratePayslips()
+        {
+            foreach(PaySlip p in this.Payslips)
+            {
+                if(!p.Generated)
+                {
+                    p.Generate(this.AnnualIncome, this.SuperRate);
+                }
+            }
+        }
 
         public override bool Equals(object other)
         {
@@ -59,7 +71,7 @@ namespace PaySlipGenerator
                 return false;
             }
 
-            if ( !(AnnualSalary.Equals(emp.AnnualSalary)))
+            if ( !(AnnualIncome.Equals(emp.AnnualIncome)))
             {
                 return false;
             }
@@ -75,15 +87,15 @@ namespace PaySlipGenerator
             return true;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(FirstName, LastName);
-        }
-
         public string ToCsvString()
         {
             PaySlip p = this.Payslips.LastOrDefault();
             return string.Format("{0} {1},{2} - {3},{4},{5},{6},{7}", this.FirstName, this.LastName, p.StartDate.ToString("dd MMMM"), p.EndDate.ToString("dd MMMM"), p.GrossIncome, p.IncomeTax, p.NetIncome, p.Super);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(FirstName, LastName);
         }
     }
 }
