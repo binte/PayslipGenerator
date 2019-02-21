@@ -59,6 +59,10 @@ namespace PaySlipGenerator
                     {
                         Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Date Interval in an incorrect format", line);
                     }
+                    catch(Exception ex)
+                    {
+                        Logger.Error("Error in line {0} : {1}. || Line: {2}", n, ex.Message, line);
+                    }
                 }
             }
 

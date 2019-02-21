@@ -1,4 +1,5 @@
-﻿using PaySlipGenerator.Tax;
+﻿using PaySlipGenerator.Exceptions;
+using PaySlipGenerator.Tax;
 using System;
 
 namespace PaySlipGenerator
@@ -35,11 +36,22 @@ namespace PaySlipGenerator
 
         public void Generate(uint annualIncome, double superRate)
         {
-            this.GrossIncome = TaxCalculator.GrossIncome(annualIncome);
-            this.IncomeTax = TaxCalculator.IncomeTax(annualIncome);
-            this.NetIncome = this.GrossIncome - this.IncomeTax;
-            this.Super = TaxCalculator.Super(annualIncome, superRate);
-            this.Generated = true;
+            try
+            {
+                this.GrossIncome = TaxCalculator.GrossIncome(annualIncome);
+                this.IncomeTax = TaxCalculator.IncomeTax(annualIncome);
+                this.NetIncome = this.GrossIncome - this.IncomeTax;
+                this.Super = TaxCalculator.Super(annualIncome, superRate);
+                this.Generated = true;
+            }
+            catch(NegativeNumberException)
+            {
+                throw;
+            }
+            catch(Exception ex)
+            {
+                throw new PayslipGenerationException(ex.Message, ex);
+            }
         }
 
 
@@ -87,7 +99,15 @@ namespace PaySlipGenerator
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(StartDate, EndDate);
+            int hash = 11;
+            hash += this.StartDate.GetHashCode() * 7;
+            hash += this.EndDate.GetHashCode() * 7;
+            hash += this.GrossIncome.GetHashCode() * 7;
+            hash += this.IncomeTax.GetHashCode() * 7;
+            hash += this.NetIncome.GetHashCode() * 7;
+            hash += this.Super.GetHashCode() * 7;
+            hash += this.Generated.GetHashCode() * 7;
+            return hash;
         }
     }
 }

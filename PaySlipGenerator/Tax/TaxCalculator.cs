@@ -27,7 +27,7 @@ namespace PaySlipGenerator.Tax
         {
             if (superRate < 0)
             {
-                throw new NegativeNumberException();
+                throw new NegativeNumberException("Negative value received for super rate @TaxCalculator");
             }
 
             return (uint)Math.Round((double)GrossIncome(annualIncome) * superRate, 0, MidpointRounding.AwayFromZero);

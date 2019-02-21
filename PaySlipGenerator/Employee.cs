@@ -1,11 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PaySlipGenerator.Exceptions;
+using PaySlipGenerator.Tax;
+using Serilog;
 
 namespace PaySlipGenerator
 {
     public class Employee : IEquatable<object>
     {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public uint AnnualIncome { get; set; }
+        public double SuperRate { get; set; }
+
+        public ICollection<PaySlip> Payslips { get; set; }
+        private static ILogger Logger;
+
+
         public Employee(string firstName, string lastName, uint annualIncome, double superRate)
         {
             this.FirstName = firstName;
@@ -28,16 +40,13 @@ namespace PaySlipGenerator
                 p.Employee = this;
             }
 
-            this.Payslips = payslips;
+            this.Payslips = (payslips != null) ? payslips : new List<PaySlip>();
         }
 
-
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public uint AnnualIncome { get; set; }
-        public double SuperRate { get; set; }
-
-        public ICollection<PaySlip> Payslips { get; set; }
+        public static void SetLogger(ILogger logger)
+        {
+            Logger = logger;
+        }
 
 
 
@@ -47,7 +56,18 @@ namespace PaySlipGenerator
             {
                 if(!p.Generated)
                 {
-                    p.Generate(this.AnnualIncome, this.SuperRate);
+                    try
+                    {
+                        p.Generate(this.AnnualIncome, this.SuperRate);
+                    }
+                    catch (NegativeNumberException ex)
+                    {
+                        Logger.Error(string.Format("Negative Number error while generating payslip for {0} {1} : {2}", p.Employee.FirstName, p.Employee.LastName, ex.Message));
+                    }
+                    catch (PayslipGenerationException ex)
+                    {
+                        Logger.Error(string.Format("Error generating payslip for {0} {1} : {2}", p.Employee.FirstName, p.Employee.LastName, ex.Message));
+                    }
                 }
             }
         }
@@ -95,7 +115,12 @@ namespace PaySlipGenerator
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(FirstName, LastName);
+            int hash = 11;
+            hash+= this.FirstName.GetHashCode() * 7;
+            hash += this.LastName.GetHashCode() * 7;
+            hash += this.AnnualIncome.GetHashCode() * 7;
+            hash += this.SuperRate.GetHashCode() * 7;
+            return hash;
         }
     }
 }
