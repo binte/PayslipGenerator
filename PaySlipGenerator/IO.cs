@@ -1,4 +1,5 @@
-﻿using PaySlipGenerator.Exceptions;
+﻿using Serilog;
+using PaySlipGenerator.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,16 +11,22 @@ namespace PaySlipGenerator
     public static class IO
     {
         private static IFileSystem FileSystem = new FileSystem();
+        private static ILogger Logger;
 
         public static void SetFileSystem(IFileSystem fileSystem)
         {
             FileSystem = fileSystem;
         }
 
+        public static void SetLogger(ILogger logger)
+        {
+            Logger = logger;
+        }
+
         public static List<Employee> ReadEmployeeData(string path) {
             int n = 0;
             List<Employee> employees = new List<Employee>();
-
+            
             using (var reader = new StreamReader(FileSystem.File.OpenRead(path)))
             {
                 while (!reader.EndOfStream)
@@ -34,23 +41,23 @@ namespace PaySlipGenerator
                     }
                     catch(WrongParameterNumberException)
                     {
-                        Console.Error.WriteLine("Error in line {0} : {1}. || Line: {2}", n, "Wrong parameter number", line);
+                        Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Wrong parameter number", line);
                     }
                     catch (AnnualIncomeFormatException)
                     {
-                        Console.Error.WriteLine("Error in line {0} : {1}. || Line: {2}", n, "Annual income in an incorrect format", line);
+                        Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Annual income in an incorrect format", line);
                     }
                     catch (SuperFormatException)
                     {
-                        Console.Error.WriteLine("Error in line {0} : {1}. || Line: {2}", n, "Super in an incorrect format", line);
+                        Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Super in an incorrect format", line);
                     }
                     catch (SuperOutOfBoundsException)
                     {
-                        Console.Error.WriteLine("Error in line {0} : {1}. || Line: {2}", n, "Super out of bounds [0-50]%", line);
+                        Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Super out of bounds [0-50]%", line);
                     }
                     catch (DateIntervalFormatException)
                     {
-                        Console.Error.WriteLine("Error in line {0} : {1}. || Line: {2}", n, "Date Interval in an incorrect format", line);
+                        Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Date Interval in an incorrect format", line);
                     }
                 }
             }

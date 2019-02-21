@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PaySlipGeneratorRunner": {
+      "commandName": "Project",
+      "commandLineArgs": "input.csv"
+    }
+  }
+}

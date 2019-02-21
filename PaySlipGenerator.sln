@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaySlipGeneratorTest", "PaySlipGeneratorTest\PaySlipGeneratorTest.csproj", "{E53723F4-BDC0-4C69-81F5-9B7853E6E7DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaySlipGeneratorTest", "PaySlipGeneratorTest\PaySlipGeneratorTest.csproj", "{E53723F4-BDC0-4C69-81F5-9B7853E6E7DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaySlipGenerator", "PaySlipGenerator\PaySlipGenerator.csproj", "{FDAFE453-55F9-426C-BE85-03A81CE191AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaySlipGenerator", "PaySlipGenerator\PaySlipGenerator.csproj", "{FDAFE453-55F9-426C-BE85-03A81CE191AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaySlipGeneratorRunner", "PaySlipGeneratorRunner\PaySlipGeneratorRunner.csproj", "{403D58C6-220D-41DE-BBE2-F08C4341F65E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{FDAFE453-55F9-426C-BE85-03A81CE191AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDAFE453-55F9-426C-BE85-03A81CE191AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDAFE453-55F9-426C-BE85-03A81CE191AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{403D58C6-220D-41DE-BBE2-F08C4341F65E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{403D58C6-220D-41DE-BBE2-F08C4341F65E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{403D58C6-220D-41DE-BBE2-F08C4341F65E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{403D58C6-220D-41DE-BBE2-F08C4341F65E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
