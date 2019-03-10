@@ -1,7 +1,5 @@
-﻿using PaySlipGenerator;
-using PaySlipGenerator.Tax;
-using System;
-using System.Collections.Generic;
+﻿using PaySlipGenerator.BLL.Services.Implementation;
+using PaySlipGenerator.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,7 +20,7 @@ namespace PaySlipGeneratorTest
         [InlineData(0.45, 99999999)]
         public void GetTaxBand_ValidTaxBand_ReturnsExpectedVariableTax(double expectedVariableTax, uint annualIncome)
         {
-            Assert.Equal(expectedVariableTax, TaxCalculator.GetTaxBand(annualIncome).VariableTax);
+            Assert.Equal(expectedVariableTax, (new TaxCalculator()).GetTaxBand(annualIncome).VariableTax);
         }
 
         [Theory]
@@ -38,7 +36,7 @@ namespace PaySlipGeneratorTest
         [InlineData(54232, 99999999)]
         public void GetTaxBand_ValidTaxBand_ReturnsExpectedFlatTax(double? expectedFlatTax, uint annualIncome)
         {
-            Assert.Equal(expectedFlatTax, TaxCalculator.GetTaxBand(annualIncome).FlatTax);
+            Assert.Equal(expectedFlatTax, (new TaxCalculator()).GetTaxBand(annualIncome).FlatTax);
         }
 
         [Theory]
@@ -48,7 +46,7 @@ namespace PaySlipGeneratorTest
         [InlineData(5002, 60029)]
         public void GrossIncome_ValidInput_ReturnsExpectedGrossIncome(uint expected, uint annualIncome)
         {
-            Assert.Equal(expected, TaxCalculator.GrossIncome(annualIncome));
+            Assert.Equal(expected, (new TaxCalculator()).GrossIncome(annualIncome));
         }
 
         [Theory]
@@ -66,7 +64,7 @@ namespace PaySlipGeneratorTest
         [InlineData(372769, 9999999)]
         public void IncomeTax_ValidInput_ReturnsExpectedGrossIncome(uint expected, uint annualIncome)
         {
-            Assert.Equal(expected, TaxCalculator.IncomeTax(annualIncome));
+            Assert.Equal(expected, (new TaxCalculator()).IncomeTax(annualIncome));
         }
 
         [Theory]
@@ -74,7 +72,7 @@ namespace PaySlipGeneratorTest
         [InlineData(7331, 120000)]
         public void NetIncome_ValidInput_ReturnsExpectedNetIncome(uint expected, uint annualIncome)
         {
-            Assert.Equal(expected, TaxCalculator.NetIncome(annualIncome));
+            Assert.Equal(expected, (new TaxCalculator()).NetIncome(annualIncome));
         }
 
         [Theory]
@@ -83,13 +81,13 @@ namespace PaySlipGeneratorTest
         [InlineData(401, 60084, 0.08)]
         public void Super_ValidInput_ReturnsExpectedSuper(uint expected, uint annualIncome, double super)
         {
-            Assert.Equal(expected, TaxCalculator.Super(annualIncome, super));
+            Assert.Equal(expected, (new TaxCalculator()).Super(annualIncome, super));
         }
 
         [Fact]
         public void Super_SuperIsNegative_FailsWithNegativeNumberException()
         {
-            Assert.Throws<NegativeNumberException>(() => TaxCalculator.Super(60050, -0.09));
+            Assert.Throws<NegativeNumberException>(() => (new TaxCalculator()).Super(60050, -0.09));
         }
     }
 }

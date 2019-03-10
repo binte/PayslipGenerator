@@ -1,8 +1,6 @@
-﻿using PaySlipGenerator.Exceptions;
-using PaySlipGenerator.Tax;
-using System;
+﻿using System;
 
-namespace PaySlipGenerator
+namespace PaySlipGenerator.DAL.Models
 {
     public class PaySlip : IEquatable<object>
     {
@@ -34,27 +32,6 @@ namespace PaySlipGenerator
         public Employee Employee { get; set; }
 
 
-        public void Generate(uint annualIncome, double superRate)
-        {
-            try
-            {
-                this.GrossIncome = TaxCalculator.GrossIncome(annualIncome);
-                this.IncomeTax = TaxCalculator.IncomeTax(annualIncome);
-                this.NetIncome = this.GrossIncome - this.IncomeTax;
-                this.Super = TaxCalculator.Super(annualIncome, superRate);
-                this.Generated = true;
-            }
-            catch(NegativeNumberException)
-            {
-                throw;
-            }
-            catch(Exception ex)
-            {
-                throw new PayslipGenerationException(ex.Message, ex);
-            }
-        }
-
-
         public override bool Equals(object other)
         {
             if (other is null || !(other is PaySlip))
@@ -64,12 +41,12 @@ namespace PaySlipGenerator
 
             PaySlip p = (PaySlip)other;
 
-            if ( this.StartDate != p.StartDate)
+            if (this.StartDate != p.StartDate)
             {
                 return false;
             }
 
-            if( this.EndDate != p.EndDate )
+            if (this.EndDate != p.EndDate)
             {
                 return false;
             }
@@ -79,17 +56,17 @@ namespace PaySlipGenerator
                 return false;
             }
 
-            if( this.IncomeTax != p.IncomeTax )
+            if (this.IncomeTax != p.IncomeTax)
             {
                 return false;
             }
 
-            if( this.NetIncome != p.NetIncome)
+            if (this.NetIncome != p.NetIncome)
             {
                 return false;
             }
 
-            if( this.Super != p.Super )
+            if (this.Super != p.Super)
             {
                 return false;
             }

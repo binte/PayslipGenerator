@@ -1,41 +1,15 @@
-﻿using PaySlipGenerator;
-using PaySlipGenerator.Tax;
+﻿using PaySlipGenerator.DAL.Models;
+using PaySlipGenerator.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PaySlipGeneratorTest
+namespace PaySlipGeneratorTest.DAL.Models
 {
     public class PaySlipTest
     {
-        [Theory]
-        [InlineData(60050, 0.09, 5004, 922, 4082, 450)]
-        [InlineData(120000, 0.1, 10000, 2669, 7331, 1000)]
-        public void Generate_ValidInput_UpdatesPayslipAccordingly(uint annualIncome, double superRate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
-        {
-            DateTime beginning = new DateTime(DateTime.Today.Year, 3, 1),
-                     end = new DateTime(DateTime.Today.Year, 3, 31);
-            PaySlip p1 = new PaySlip(beginning, end, grossIncome, incomeTax, netIncome, super),
-                    p2 = new PaySlip(beginning, end);
-
-            p2.Generate(annualIncome, superRate);
-            Assert.Equal(p1, p2);
-        }
-
-        [Theory]
-        [InlineData(60050, -0.09, 5004, 922, 4082, 450)]
-        [InlineData(120000, -0.1, 10000, 2669, 7331, 1000)]
-        public void Generate_NegativeSuper_ThrowsNegativeNumberException(uint annualIncome, double superRate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
-        {
-            DateTime beginning = new DateTime(DateTime.Today.Year, 3, 1),
-                     end = new DateTime(DateTime.Today.Year, 3, 31);
-            PaySlip p = new PaySlip(beginning, end, grossIncome, incomeTax, netIncome, super);
-
-            Assert.Throws<NegativeNumberException>(() => p.Generate(annualIncome, superRate));
-        }
-
         [Fact]
         public void Equals_ObjectIsNull_ReturnsFalse()
         {

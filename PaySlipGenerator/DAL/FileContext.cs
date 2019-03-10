@@ -1,45 +1,51 @@
-﻿using Serilog;
+﻿using PaySlipGenerator.DAL.Models;
 using PaySlipGenerator.Exceptions;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 
-namespace PaySlipGenerator
+namespace PaySlipGenerator.DAL
 {
-    public static class IO
+    public class FileContext
     {
-        private static IFileSystem FileSystem = new FileSystem();
-        private static ILogger Logger;
+        public readonly string OriginFilePath;
+        public readonly string DestinationFilePath;
+        public readonly IFileSystem FileSystem;
+        public readonly ILogger Logger;
 
-        public static void SetFileSystem(IFileSystem fileSystem)
+
+        public FileContext() { }
+
+        public FileContext(string originFilePath, string destinationFilePath, IFileSystem fileSystem, ILogger logger)
         {
-            FileSystem = fileSystem;
+            this.OriginFilePath = originFilePath;
+            this.DestinationFilePath = destinationFilePath;
+            this.FileSystem = fileSystem;
+            this.Logger = logger;
         }
 
-        public static void SetLogger(ILogger logger)
-        {
-            Logger = logger;
-        }
 
-        public static List<Employee> ReadEmployeeData(string path) {
+        public IList<Employee> ReadFile()
+        {
             int n = 0;
-            List<Employee> employees = new List<Employee>();
-            
-            using (var reader = new StreamReader(FileSystem.File.OpenRead(path)))
+            IList<Employee> employees = new List<Employee>();
+
+            using (var reader = new StreamReader(FileSystem.File.OpenRead(this.OriginFilePath)))
             {
                 while (!reader.EndOfStream)
                 {
                     n++;
                     var line = reader.ReadLine();
-                    
+
                     try
                     {
                         Employee e = ParseEmployeeLine(line);
                         employees.Add(e);
                     }
-                    catch(WrongParameterNumberException)
+                    catch (WrongParameterNumberException)
                     {
                         Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Wrong parameter number", line);
                     }
@@ -59,21 +65,45 @@ namespace PaySlipGenerator
                     {
                         Logger.Error("Error in line {0} : {1}. || Line: {2}", n, "Date Interval in an incorrect format", line);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Logger.Error("Error in line {0} : {1}. || Line: {2}", n, ex.Message, line);
                     }
                 }
             }
 
+            Logger.Information("Finished reading file");
+
             return employees;
         }
 
-        private static Employee ParseEmployeeLine(string line) {
+        public static void WriteStream(IList<Employee> employees, StreamWriter writer)
+        {
+            foreach (Employee e in employees)
+            {
+                writer.WriteLine(e.ToCsvString());
+            }
+
+            writer.Flush();
+        }
+
+        public void WriteFile(MemoryStream stream)
+        {
+            using (Stream file = File.Create(this.DestinationFilePath))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(file);
+            }
+
+            stream.Flush();
+        }
+
+        private Employee ParseEmployeeLine(string line)
+        {
             string[] parameters = line.Split(','), dates;
             int super = 0;
 
-            if( parameters.Length != 5 )
+            if (parameters.Length != 5)
             {
                 throw new WrongParameterNumberException();
             }
@@ -100,7 +130,7 @@ namespace PaySlipGenerator
                 throw new SuperFormatException();
             }
 
-            if(super < 0 || super > 50) { throw new SuperOutOfBoundsException(); }
+            if (super < 0 || super > 50) { throw new SuperOutOfBoundsException(); }
 
             PaySlip p;
             try
@@ -112,31 +142,10 @@ namespace PaySlipGenerator
             {
                 throw new DateIntervalFormatException();
             }
-            
-            Employee e = new Employee(parameters[0], parameters[1], annualIncome, (double)super/100, new List<PaySlip>() { p });
+
+            Employee e = new Employee(parameters[0], parameters[1], annualIncome, (double)super / 100, new List<PaySlip>() { p });
             p.Employee = e;
             return e;
-        }
-
-        public static void WriteToStream(List<Employee> employees, StreamWriter writer)
-        {
-            foreach(Employee e in employees)
-            {
-                writer.WriteLine(e.ToCsvString());
-            }
-
-            writer.Flush();
-        }
-
-        public static void WriteToFile(string path, MemoryStream stream)
-        {
-            using (Stream file = File.Create(path))
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-                stream.CopyTo(file);
-            }
-
-            stream.Flush();
         }
     }
 }

@@ -1,9 +1,14 @@
-﻿using PaySlipGenerator;
-using PaySlipGenerator.Exceptions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PaySlipGenerator.ApL.Services.Implementation;
+using PaySlipGenerator.ApL.Services.Interfaces;
+using PaySlipGenerator.BLL.Services.Implementation;
+using PaySlipGenerator.BLL.Services.Interfaces;
+using PaySlipGenerator.DAL;
+using PaySlipGenerator.DAL.Repository.Implementation;
+using PaySlipGenerator.DAL.Repository.Interfaces;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 
 namespace PaySlipGeneratorRunner
 {
@@ -11,11 +16,6 @@ namespace PaySlipGeneratorRunner
     {
         public static int Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("logs-main.txt")
-                .WriteTo.Console()
-                .CreateLogger();
-
             if (args.Length != 2)
             {
                 Log.Logger.Error("Wrong input : The program expects an input filename and an output filename");
@@ -23,39 +23,45 @@ namespace PaySlipGeneratorRunner
                 return 1;
             }
 
-            Log.Logger.Information("Payslip generation started");
-            
-            try
-            {
-                IO.SetLogger(Log.Logger);
-                Employee.SetLogger(Log.Logger);
-                List<Employee> employees = IO.ReadEmployeeData(args[0]);        // 1) Read file
+            // create service collection
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection, args[0], args[1]);
 
-                Log.Logger.Information("Finished reading file");
+            // create service provider
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-                foreach (Employee e in employees) { e.GeneratePayslips(); }     // 2) Generate payslips
-
-                Log.Logger.Information("Finished generating payslips");
-
-                using (var stream = new MemoryStream())
-                using (var writer = new StreamWriter(stream))
-                {
-                    IO.WriteToStream(employees, writer);                        // 3) Write to stream
-                    IO.WriteToFile(args[1], stream);                            // 4) Write to file
-                }
-
-                Log.Logger.Information("Finished writing to file");
-            }
-            catch(Exception ex)
-            {
-                Log.Logger.Error("Payslips could not be generated: {0}", ex.Message);
-            }
-
-            Log.Logger.Information("Payslip generation finished");
-
-            Console.ReadKey();
+            // entry to run app
+            serviceProvider.GetService<App>().Run();
 
             return 0;
+        }
+
+        private static void ConfigureServices(IServiceCollection services, string originFilePath, string destinationFilePath)
+        {
+            // configure logging
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File("logs-main.txt")
+            .WriteTo.Console()
+            .CreateLogger();
+
+            // add logging
+            services.AddSingleton<ILogger>(Log.Logger);
+
+            // add context
+            services.AddSingleton<Context>(_=> new Context(originFilePath, destinationFilePath, new FileSystem(), Log.Logger));
+
+            // add repositories
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+            // add domain services
+            services.AddTransient<ITaxCalculator, TaxCalculator>();
+            services.AddTransient<IPayslipGenerator, PayslipGenerator>();
+
+            // add application services
+            services.AddTransient<ITaxCalculatorService, TaxCalculatorService>();
+
+            // add app
+            services.AddTransient<App>();
         }
     }
 }

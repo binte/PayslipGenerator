@@ -1,16 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PaySlipGenerator.BLL.Services.Interfaces;
+using PaySlipGenerator.Exceptions;
+using System;
 
-namespace PaySlipGenerator.Tax
+/**
+ * Domain Service
+ */
+namespace PaySlipGenerator.BLL.Services.Implementation
 {
-    public static partial class TaxCalculator
+    public class TaxCalculator : ITaxCalculator
     {
-        public static uint GrossIncome(uint annualIncome)
+        public uint GrossIncome(uint annualIncome)
         {
             return (uint) Math.Round((double)annualIncome / 12, 0, MidpointRounding.AwayFromZero);
         }
 
-        public static uint IncomeTax(uint annualIncome)
+        public uint IncomeTax(uint annualIncome)
         {
             TaxBand band = TaxBands.GetTaxBand(annualIncome);
             double value = band.VariableTax * (annualIncome - band.TaxableIncomeLB - 1) + band.FlatTax;
@@ -18,12 +22,12 @@ namespace PaySlipGenerator.Tax
             return (uint)Math.Round((double)value / 12, 0, MidpointRounding.AwayFromZero);
         }
 
-        public static uint NetIncome(uint annualIncome)
+        public uint NetIncome(uint annualIncome)
         {
             return GrossIncome(annualIncome) - IncomeTax(annualIncome);
         }
 
-        public static uint Super(uint annualIncome, double superRate)
+        public uint Super(uint annualIncome, double superRate)
         {
             if (superRate < 0)
             {
@@ -33,7 +37,7 @@ namespace PaySlipGenerator.Tax
             return (uint)Math.Round((double)GrossIncome(annualIncome) * superRate, 0, MidpointRounding.AwayFromZero);
         }
 
-        public static TaxBand GetTaxBand(uint annualIncome)
+        public TaxBand GetTaxBand(uint annualIncome)
         {
             return TaxBands.GetTaxBand(annualIncome);
         }

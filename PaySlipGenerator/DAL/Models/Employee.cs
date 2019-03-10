@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PaySlipGenerator.Exceptions;
-using PaySlipGenerator.Tax;
-using Serilog;
 
-namespace PaySlipGenerator
+namespace PaySlipGenerator.DAL.Models
 {
     public class Employee : IEquatable<object>
     {
@@ -15,7 +12,6 @@ namespace PaySlipGenerator
         public double SuperRate { get; set; }
 
         public ICollection<PaySlip> Payslips { get; set; }
-        private static ILogger Logger;
 
 
         public Employee(string firstName, string lastName, uint annualIncome, double superRate)
@@ -40,63 +36,34 @@ namespace PaySlipGenerator
                 p.Employee = this;
             }
 
-            this.Payslips = (payslips != null) ? payslips : new List<PaySlip>();
-        }
-
-        public static void SetLogger(ILogger logger)
-        {
-            Logger = logger;
-        }
-
-
-
-        public void GeneratePayslips()
-        {
-            foreach(PaySlip p in this.Payslips)
-            {
-                if(!p.Generated)
-                {
-                    try
-                    {
-                        p.Generate(this.AnnualIncome, this.SuperRate);
-                    }
-                    catch (NegativeNumberException ex)
-                    {
-                        Logger.Error(string.Format("Negative Number error while generating payslip for {0} {1} : {2}", p.Employee.FirstName, p.Employee.LastName, ex.Message));
-                    }
-                    catch (PayslipGenerationException ex)
-                    {
-                        Logger.Error(string.Format("Error generating payslip for {0} {1} : {2}", p.Employee.FirstName, p.Employee.LastName, ex.Message));
-                    }
-                }
-            }
+            this.Payslips = payslips ?? new List<PaySlip>();
         }
 
         public override bool Equals(object other)
         {
-            if( other is null || !(other is Employee) )
+            if (other is null || !(other is Employee))
             {
                 return false;
             }
 
             Employee emp = (Employee)other;
 
-            if ( !FirstName.Equals(emp.FirstName))
+            if (!FirstName.Equals(emp.FirstName))
             {
                 return false;
             }
 
-            if ( !(LastName.Equals(emp.LastName)) )
+            if (!(LastName.Equals(emp.LastName)))
             {
                 return false;
             }
 
-            if ( !(AnnualIncome.Equals(emp.AnnualIncome)))
+            if (!(AnnualIncome.Equals(emp.AnnualIncome)))
             {
                 return false;
             }
 
-            if ( !(SuperRate.Equals(emp.SuperRate)))
+            if (!(SuperRate.Equals(emp.SuperRate)))
             {
                 return false;
             }
@@ -116,7 +83,7 @@ namespace PaySlipGenerator
         public override int GetHashCode()
         {
             int hash = 11;
-            hash+= this.FirstName.GetHashCode() * 7;
+            hash += this.FirstName.GetHashCode() * 7;
             hash += this.LastName.GetHashCode() * 7;
             hash += this.AnnualIncome.GetHashCode() * 7;
             hash += this.SuperRate.GetHashCode() * 7;

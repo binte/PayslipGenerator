@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IOTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="data\input.csv" />
   </ItemGroup>
 
