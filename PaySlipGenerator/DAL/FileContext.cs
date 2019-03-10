@@ -77,7 +77,7 @@ namespace PaySlipGenerator.DAL
             return employees;
         }
 
-        public static void WriteStream(IList<Employee> employees, StreamWriter writer)
+        public void WriteStream(IList<Employee> employees, StreamWriter writer)
         {
             foreach (Employee e in employees)
             {

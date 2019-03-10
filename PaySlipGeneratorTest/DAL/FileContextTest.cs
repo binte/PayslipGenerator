@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
+using System.Text;
 using Xunit;
 
 namespace PaySlipGeneratorTest.DAL
@@ -31,7 +32,7 @@ namespace PaySlipGeneratorTest.DAL
                 .CreateLogger();
 
                 this.MockFS = new MockFileSystem();
-                this.Context = new FileContext(@"data\input.csv", @"data\payslips.csv", this.MockFS, Log.Logger);  // The destination file path is not used actually
+                this.Context = new FileContext(@"data\input.csv", @"data\payslips.csv", this.MockFS, Log.Logger);
             }
         }
 
@@ -45,11 +46,11 @@ namespace PaySlipGeneratorTest.DAL
 
 
         [Collection("Common Variables FileContext Test")]
-        public class ReadFileUnitTests
+        public class ReadWriteUnitTests
         {
             private readonly Fixture Fixture;
 
-            public ReadFileUnitTests(Fixture fixture)
+            public ReadWriteUnitTests(Fixture fixture)
             {
                 this.Fixture = fixture;
             }
@@ -151,93 +152,67 @@ namespace PaySlipGeneratorTest.DAL
                     Console.SetOut(new StreamWriter(Console.OpenStandardOutput()));
                 }
             }
+
+            [Fact]
+            public void WriteStream_OneEmployee_Success()
+            {
+                using (var stream = new MemoryStream())
+                using (var writer = new StreamWriter(stream))
+                {
+                    List<Employee> employees = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), };
+
+                    this.Fixture.Context.WriteStream(employees, writer);
+
+                    string actual = Encoding.UTF8.GetString(stream.ToArray());
+                    Assert.Equal("David Rudd,01 March - 31 March,5004,922,4082,450\r\n", actual);
+                }
+            }
+
+            /**
+             * INTEGRATION TESTS
+             */
+            [Fact]
+            public void ReadEmployeeData_WrongPath_FailsWithFileNotFoundException()
+            {
+                Assert.Throws<FileNotFoundException>(() => this.Fixture.Context.ReadFile());
+            }
+
+            [Fact]
+            public void ReadToStream_ReadTwoEmployees_ReturnsSameEmployeeList()
+            {
+                IList<Employee> actual = this.Fixture.Context.ReadFile();
+                List<Employee> expected = new List<Employee>();
+
+                expected.AddRange(new List<Employee>()
+            {
+                new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) }),
+                new Employee("Ryan", "Chen", 120000, 0.1, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) })
+            });
+
+                Assert.Equal(expected, actual);
+            }
+
+            [Fact]
+            public void WriteToFile_OneEmployeeInStream_Success()
+            {
+                using (var stream = new MemoryStream())
+                using (var writer = new StreamWriter(stream))
+                {
+                    List<Employee> employees = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), };
+
+                    this.Fixture.Context.WriteStream(employees, writer);
+                    this.Fixture.Context.WriteFile(stream);
+                }
+
+                string line = "";
+                using (var reader = new StreamReader(File.OpenRead(@"data\payslips.csv")))
+                {
+                    line = reader.ReadLine();
+                }
+
+                Assert.Equal("David Rudd,01 March - 31 March,5004,922,4082,450", line);
+            }
         }
-
-        //[Fact]
-        //public void WriteToStream_OneEmployee_Success()
-        //{
-        //    using (var stream = new MemoryStream())
-        //    using (var writer = new StreamWriter(stream))
-        //    {
-        //        List<Employee> employees = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), };
-
-        //        IO.WriteToStream(employees, writer);
-
-        //        string actual = Encoding.UTF8.GetString(stream.ToArray());
-        //        Assert.Equal("David Rudd,01 March - 31 March,5004,922,4082,450\r\n", actual);
-        //    }
-        //}
-
-        //[Fact]
-        //public void WriteToFile_MockOneEmployeeInStream_Success()
-        //{
-        //    var mockFileSystem = new MockFileSystem();
-        //    var mockOutputFile = new MockFileData("David Rudd,01 March – 31 March,5004,922,4082,450");
-
-        //    mockFileSystem.AddFile(@"data\payslips.csv", mockOutputFile);
-        //    IO.SetFileSystem(mockFileSystem);  // inject the mock FS into the IO class
-
-        //    using (var stream = new MemoryStream())
-        //    using (var writer = new StreamWriter(stream))
-        //    {
-        //        List<Employee> employees = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), };
-
-        //        IO.WriteToStream(employees, writer);
-        //        IO.WriteToFile(@"data\payslips.csv", stream);
-        //        Assert.Equal("David Rudd,01 March - 31 March,5004,922,4082,450\r\n", Encoding.UTF8.GetString(stream.ToArray()));
-        //    }
-        //}
-
-        ///**
-        // * INTEGRATION TESTS
-        // */
-        //[Fact]
-        //public void ReadEmployeeData_WrongPath_FailsWithFileNotFoundException()
-        //{
-        //    Assert.Throws<FileNotFoundException>(() => IO.ReadEmployeeData(@"input.csv"));
-        //}
-
-        //[Fact]
-        //public void ReadToStream_ReadTwoEmployees_ReturnsSameEmployeeList()
-        //{
-        //    List<Employee> actual = IO.ReadEmployeeData(@"data\input.csv"),
-        //                   expected = new List<Employee>();
-
-        //    expected.AddRange(new List<Employee>()
-        //    {
-        //        new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) }),
-        //        new Employee("Ryan", "Chen", 120000, 0.1, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31)) })
-        //    });
-
-        //    Assert.Equal(expected, actual);
-        //}
-
-        //[Fact]
-        //public void WriteToFile_OneEmployeeInStream_Success()
-        //{
-        //    using (var stream = new MemoryStream())
-        //    using (var writer = new StreamWriter(stream))
-        //    {
-        //        List<Employee> employees = new List<Employee>() { new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip>() { new PaySlip(new DateTime(2019, 3, 1), new DateTime(2019, 3, 31), 5004, 922, 4082, 450) }), };
-
-        //        IO.WriteToStream(employees, writer);
-        //        IO.WriteToFile(@"data\payslips.csv", stream);
-        //    }
-
-        //    string line = "";
-        //    using (var reader = new StreamReader(File.OpenRead(@"data\payslips.csv")))
-        //    {
-        //        line = reader.ReadLine();
-        //    }
-
-        //    Assert.Equal("David Rudd,01 March - 31 March,5004,922,4082,450", line);
-        //}
-
-
-
-
-        // TODO descomentar e arranjar tudo o que está acima, e deixar o que está abaixo
-
 
 
         //[Theory]

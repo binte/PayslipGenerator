@@ -42,11 +42,11 @@ namespace PaySlipGeneratorTest.BLL.Services
         }
 
         [Collection("Common Variables Payslip Generator Test")]
-        public class GeneratePayslipUnitTests
+        public class GeneratePayslipsUnitTests
         {
             private readonly Fixture Fixture;
             
-            public GeneratePayslipUnitTests(Fixture fixture)
+            public GeneratePayslipsUnitTests(Fixture fixture)
             {
                 this.Fixture = fixture;
             }
