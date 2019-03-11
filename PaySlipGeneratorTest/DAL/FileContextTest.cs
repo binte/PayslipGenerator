@@ -32,7 +32,7 @@ namespace PaySlipGeneratorTest.DAL
                 .CreateLogger();
 
                 this.MockFS = new MockFileSystem();
-                this.Context = new FileContext(@"data\input.csv", @"data\payslips.csv", this.MockFS, Log.Logger);
+                this.Context = new FileContext(@"data\input.csv", @"data\output.csv", this.MockFS, Log.Logger);
             }
         }
 
@@ -205,7 +205,7 @@ namespace PaySlipGeneratorTest.DAL
                 }
 
                 string line = "";
-                using (var reader = new StreamReader(File.OpenRead(@"data\payslips.csv")))
+                using (var reader = new StreamReader(File.OpenRead(@"data\output.csv")))
                 {
                     line = reader.ReadLine();
                 }

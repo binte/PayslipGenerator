@@ -12,6 +12,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using System.IO;
 
 namespace PaySlipGeneratorTest.BLL.Services
 {
@@ -56,6 +57,7 @@ namespace PaySlipGeneratorTest.BLL.Services
             public void GeneratePayslips_EmployeeHasNoPayslips_NoChangesMade()
             {
                 Employee e1 = new Employee("David", "Rudd", 60050, 0.09), e2 = new Employee("David", "Rudd", 60050, 0.09);
+                Assert.True(e1.Equals(e2));
                 this.Fixture.Generator.GeneratePayslips(e1, new TaxCalculator(), Log.Logger);
                 Assert.True(e1.Equals(e2));
             }
@@ -84,6 +86,7 @@ namespace PaySlipGeneratorTest.BLL.Services
                 Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p1 }),
                          e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p2 });
 
+                Assert.True(e1.Equals(e2));
                 this.Fixture.Generator.GeneratePayslips(e1, new TaxCalculator(), Log.Logger);
                 Assert.False(e1.Equals(e2));
             }
@@ -96,6 +99,7 @@ namespace PaySlipGeneratorTest.BLL.Services
                 Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p1 }),
                          e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p2 });
 
+                Assert.False(e1.Equals(e2));
                 this.Fixture.Generator.GeneratePayslips(e1, new TaxCalculator(), Log.Logger);
                 Assert.True(e1.Equals(e2));
             }
@@ -108,6 +112,7 @@ namespace PaySlipGeneratorTest.BLL.Services
                 Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p1 }),
                          e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p2 });
 
+                Assert.True(e1.Equals(e2));
                 this.Fixture.Generator.GeneratePayslips(e1, new TaxCalculator(), Log.Logger);
                 Assert.True(e1.Equals(e2));
             }
@@ -122,20 +127,38 @@ namespace PaySlipGeneratorTest.BLL.Services
                 Employee e1 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p11, p12 }),
                          e2 = new Employee("David", "Rudd", 60050, 0.09, new List<PaySlip> { p21, p22 });
 
+                Assert.False(e1.Equals(e2));
                 this.Fixture.Generator.GeneratePayslips(e1, new TaxCalculator(), Log.Logger);
                 Assert.True(e1.Equals(e2));
+            }
+
+            [Fact]
+            public void GeneratePayslips_EmployeeHasNegativeSuper_LogsNegativeNumberException()
+            {
+                PaySlip p = new PaySlip(new DateTime(DateTime.Today.Year, 4, 1), new DateTime(DateTime.Today.Year, 4, 30));
+                Employee e = new Employee("David", "Rudd", 60050, -0.09, new List<PaySlip> { p });
+
+                using (StringWriter sw = new StringWriter())
+                {
+                    Console.SetOut(sw);
+                    this.Fixture.Generator.GeneratePayslips(e, new TaxCalculator(), Log.Logger);
+                    string output = string.Format("Negative Number error while generating payslip for {0} {1} : Negative value received for super rate @TaxCalculator", e.FirstName, e.LastName);
+                    Assert.Contains(output, sw.ToString());
+                    Console.SetOut(new StreamWriter(Console.OpenStandardOutput()));
+                }
             }
 
             [Theory]
             [InlineData(60050, 0.09, 5004, 922, 4082, 450)]
             [InlineData(120000, 0.1, 10000, 2669, 7331, 1000)]
-            public void Generate_ValidInput_UpdatesPayslipAccordingly(uint annualIncome, double superRate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
+            public void GeneratePayslip_ValidInput_UpdatesPayslipAccordingly(uint annualIncome, double superRate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
             {
                 DateTime beginning = new DateTime(DateTime.Today.Year, 3, 1),
                          end = new DateTime(DateTime.Today.Year, 3, 31);
                 PaySlip p1 = new PaySlip(beginning, end, grossIncome, incomeTax, netIncome, super),
                         p2 = new PaySlip(beginning, end);
 
+                Assert.NotEqual(p1, p2);
                 this.Fixture.Generator.GeneratePayslip(new TaxCalculator(), p2, annualIncome, superRate);
                 Assert.Equal(p1, p2);
             }
@@ -143,7 +166,7 @@ namespace PaySlipGeneratorTest.BLL.Services
             [Theory]
             [InlineData(60050, -0.09, 5004, 922, 4082, 450)]
             [InlineData(120000, -0.1, 10000, 2669, 7331, 1000)]
-            public void Generate_NegativeSuper_ThrowsNegativeNumberException(uint annualIncome, double superRate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
+            public void GeneratePayslip_NegativeSuper_ThrowsNegativeNumberException(uint annualIncome, double superRate, uint grossIncome, uint incomeTax, uint netIncome, uint super)
             {
                 DateTime beginning = new DateTime(DateTime.Today.Year, 3, 1),
                          end = new DateTime(DateTime.Today.Year, 3, 31);
