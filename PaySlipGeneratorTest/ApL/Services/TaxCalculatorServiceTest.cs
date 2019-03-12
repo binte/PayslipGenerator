@@ -7,10 +7,10 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
 using Moq;
 using Xunit;
 using PaySlipGenerator.DAL.Context.Interfaces;
+using System.IO.Abstractions;
 
 namespace PaySlipGeneratorTest.ApL.Services
 {
@@ -84,7 +84,7 @@ namespace PaySlipGeneratorTest.ApL.Services
             }
 
             [Fact]
-            public void GeneratePayslips_TwoMockedEmployeesWithUngenerateddPayslips_PayslipsGeneratedButOneIsDifferent()
+            public void GeneratePayslips_TwoMockedEmployeesWithUngenerateddPayslips_FailsWithPayslipsGeneratedWithDifferentData()
             {
                 PaySlip p1 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31)),
                         p2 = new PaySlip(new DateTime(DateTime.Today.Year, 3, 1), new DateTime(DateTime.Today.Year, 3, 31));

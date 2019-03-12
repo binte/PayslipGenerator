@@ -4,8 +4,11 @@
  * https://xunit.github.io/docs/shared-context
  */
 
+using Moq;
 using PaySlipGenerator.DAL.Context.Implementation;
+using PaySlipGenerator.DAL.Context.Interfaces;
 using PaySlipGenerator.DAL.Models;
+using PaySlipGenerator.DAL.Repository.Implementation;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -23,13 +26,13 @@ namespace PaySlipGeneratorTest.DAL.Context
         public const string OutputFilePath = @"data\output.csv";
     }
 
-    public class ReadFileTests {
+    public class ReadWriteTests {
 
         /**
          * Integration Test
          */
         [Fact]
-        public void ReadEmployeeData_WrongPath_FailsWithFileNotFoundException()
+        public void ReadFile_WrongPath_FailsWithFileNotFoundException()
         {
             FileContext Context = new FileContext("input.csv", Globals.OutputFilePath, new FileSystem(), Log.Logger);
 
