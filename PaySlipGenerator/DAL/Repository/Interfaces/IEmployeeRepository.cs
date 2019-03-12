@@ -13,8 +13,7 @@ namespace PaySlipGenerator.DAL.Repository.Interfaces
 
         void Add(Employee entity);
         void AddRange(IEnumerable<Employee> entities);
-        void AddAll();
-
+        void Persist();
         void Remove(Employee entity);
         void RemoveRange(IEnumerable<Employee> entities);
     }

@@ -33,7 +33,7 @@ namespace PaySlipGenerator.ApL.Services.Implementation
 
         public void StoreData()
         {
-            Repository.AddAll();
+            Repository.Persist();
         }
     }
 }

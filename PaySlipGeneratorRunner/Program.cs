@@ -3,7 +3,8 @@ using PaySlipGenerator.ApL.Services.Implementation;
 using PaySlipGenerator.ApL.Services.Interfaces;
 using PaySlipGenerator.BLL.Services.Implementation;
 using PaySlipGenerator.BLL.Services.Interfaces;
-using PaySlipGenerator.DAL;
+using PaySlipGenerator.DAL.Context.Implementation;
+using PaySlipGenerator.DAL.Context.Interfaces;
 using PaySlipGenerator.DAL.Repository.Implementation;
 using PaySlipGenerator.DAL.Repository.Interfaces;
 using Serilog;
@@ -48,7 +49,8 @@ namespace PaySlipGeneratorRunner
             services.AddSingleton<ILogger>(Log.Logger);
 
             // add context
-            services.AddSingleton<Context>(_=> new Context(originFilePath, destinationFilePath, new FileSystem(), Log.Logger));
+            services.AddScoped<IFileContext>(_ => new FileContext(originFilePath, destinationFilePath, new FileSystem(), Log.Logger));
+            services.AddScoped<IContext, Context>();
 
             // add repositories
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();

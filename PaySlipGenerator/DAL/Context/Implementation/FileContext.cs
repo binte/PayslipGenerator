@@ -1,4 +1,5 @@
-﻿using PaySlipGenerator.DAL.Models;
+﻿using PaySlipGenerator.DAL.Context.Interfaces;
+using PaySlipGenerator.DAL.Models;
 using PaySlipGenerator.Exceptions;
 using Serilog;
 using System;
@@ -7,17 +8,15 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 
-namespace PaySlipGenerator.DAL
+namespace PaySlipGenerator.DAL.Context.Implementation
 {
-    public class FileContext
+    public class FileContext : IFileContext
     {
         public readonly string OriginFilePath;
         public readonly string DestinationFilePath;
         public readonly IFileSystem FileSystem;
         public readonly ILogger Logger;
 
-
-        public FileContext() { }
 
         public FileContext(string originFilePath, string destinationFilePath, IFileSystem fileSystem, ILogger logger)
         {

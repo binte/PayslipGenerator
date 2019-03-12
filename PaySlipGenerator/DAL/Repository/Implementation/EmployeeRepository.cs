@@ -4,17 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using PaySlipGenerator.DAL.Context.Interfaces;
 
 namespace PaySlipGenerator.DAL.Repository.Implementation
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        protected readonly Context Context;
+        private readonly IContext Context;
 
 
-        public EmployeeRepository(Context context)
+        public EmployeeRepository(IContext context)
         {
-            Context = context;
+            this.Context = context;
         }
 
 
@@ -35,7 +36,7 @@ namespace PaySlipGenerator.DAL.Repository.Implementation
 
         public void Add(Employee entity)
         {
-            throw new NotImplementedException();
+            Context.Add(entity);
         }
 
         public void AddRange(IEnumerable<Employee> entities)
@@ -43,14 +44,14 @@ namespace PaySlipGenerator.DAL.Repository.Implementation
             throw new NotImplementedException();
         }
 
-        public void AddAll()
+        public void Persist()
         {
             Context.SetEmployees();
         }
 
         public void Remove(Employee entity)
         {
-            throw new NotImplementedException();
+            Context.Remove(entity);
         }
 
         public void RemoveRange(IEnumerable<Employee> entities)
